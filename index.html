@@ -8,75 +8,75 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f5f5f5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
             color: #1a1a1a;
             line-height: 1.6;
         }
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
         header {
-            background: white;
+            background: linear-gradient(135deg, #FF3621 0%, #ff6b5a 100%);
             padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(255,54,33,0.4);
+            border: none;
             margin-bottom: 30px;
             text-align: center;
         }
         h1 { 
-            color: #FF3621; 
+            color: white; 
             font-size: 2.5em; 
             margin-bottom: 10px;
             font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
         .tabs {
             display: flex;
             gap: 5px;
-            background: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 15px 20px 0;
-            border-radius: 8px 8px 0 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 5px 20px rgba(102,126,234,0.4);
             overflow-x: auto;
-            border: 1px solid #e0e0e0;
-            border-bottom: none;
+            border: none;
         }
         .tab {
             padding: 12px 24px;
-            background: transparent;
+            background: rgba(255,255,255,0.1);
             border: none;
-            border-bottom: 3px solid transparent;
+            border-radius: 8px 8px 0 0;
             cursor: pointer;
             font-size: 0.95em;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: all 0.3s;
             white-space: nowrap;
-            color: #666;
+            color: rgba(255,255,255,0.7);
         }
         .tab:hover { 
-            color: #FF3621;
-            border-bottom-color: #FFB3A7;
+            background: rgba(255,255,255,0.2);
+            color: white;
         }
         .tab.active {
-            color: #FF3621;
-            border-bottom-color: #FF3621;
+            background: white;
+            color: #667eea;
             font-weight: 600;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
         }
         .tab-content {
             display: none;
             background: white;
             padding: 40px;
-            border-radius: 0 0 8px 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
             margin-bottom: 30px;
-            border: 1px solid #e0e0e0;
-            border-top: none;
+            border: none;
             color: #1a1a1a;
         }
         .tab-content.active { display: block; }
         h2 { 
-            color: #1a1a1a; 
+            color: #667eea; 
             margin-bottom: 20px; 
             font-size: 1.8em;
-            font-weight: 600;
+            font-weight: 700;
         }
         h3 { 
             color: #FF3621; 
@@ -135,12 +135,12 @@
         ul { margin-left: 30px; margin-top: 10px; }
         li { margin: 8px 0; }
         footer {
-            background: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(102,126,234,0.4);
             text-align: center;
-            border: 1px solid #e0e0e0;
+            border: none;
         }
     </style>
 </head>
@@ -148,7 +148,7 @@
     <div class="container">
         <header>
             <h1>📚 Data Ingestion com Lakeflow Connect</h1>
-            <p style="font-size: 1.2em; color: #ccc; margin-top: 10px;">Guia Completo e Detalhado</p>
+            <p style="font-size: 1.2em; color: rgba(255,255,255,0.95); margin-top: 10px;">Guia Completo e Detalhado</p>
             <div style="margin-top: 20px;">
                 <span class="badge">Databricks</span>
                 <span class="badge">Unity Catalog</span>
@@ -177,7 +177,7 @@
             </p>
 
             <h3>🔄 Fluxo Completo do Processo</h3>
-            <img src="Screenshot_5.png" alt="Fluxo do Processo" class="flow-image">
+            <img src="ChatGPT Image Nov 29, 2025, 11_16_14 AM.png" alt="Fluxo do Processo" class="flow-image">
 
             <h3>🏗️ Arquitetura Medallion</h3>
             <table>
@@ -808,13 +808,13 @@ VACUUM smart_claims_dev.01_bronze.claims RETAIN 168 HOURS;</code>
         </div>
 
         <footer>
-            <h2 style="color: #FF3621; margin-bottom: 15px;">👩🏽‍💻 Vanessa Prado</h2>
+            <h2 style="color: white; margin-bottom: 15px; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">👩🏽‍💻 Vanessa Prado</h2>
             <p style="font-size: 1.1em; margin-bottom: 10px;">
-                <a href="https://github.com/euvanessa-prado" target="_blank" style="color: #FF3621; text-decoration: none; font-weight: bold;">
+                <a href="https://github.com/euvanessa-prado" target="_blank" style="color: white; text-decoration: none; font-weight: bold; text-shadow: 0 1px 5px rgba(0,0,0,0.2);">
                     GitHub: @euvanessa-prado
                 </a>
             </p>
-            <p style="color: #ccc; margin-top: 20px;">
+            <p style="color: rgba(255,255,255,0.9); margin-top: 20px;">
                 ⭐ Projeto educacional - livre para uso e aprendizado!
             </p>
         </footer>

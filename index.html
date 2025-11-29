@@ -76,13 +76,13 @@
         }
         .tab:hover { 
             background: #f8f8f8;
-            color: #00A972;
+            color: #FF3621;
         }
         .tab.active {
             background: #f8f8f8;
-            color: #00A972;
+            color: #FF3621;
             font-weight: 600;
-            border-bottom: 3px solid #00A972;
+            border-bottom: 3px solid #FF3621;
         }
         .tab-content {
             display: none;
@@ -103,7 +103,7 @@
             font-weight: 700;
         }
         h3 { 
-            color: #00A972; 
+            color: #0F3621; 
             margin: 25px 0 15px; 
             font-size: 1.3em;
             font-weight: 600;
@@ -126,14 +126,14 @@
             width: 100%;
             height: auto;
             border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,169,114,0.2), 0 0 0 1px rgba(0,169,114,0.1);
+            box-shadow: 0 8px 24px rgba(255,54,33,0.2), 0 0 0 1px rgba(255,54,33,0.1);
             margin: 30px auto;
             display: block;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .flow-image:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 32px rgba(0,169,114,0.3), 0 0 0 1px rgba(0,169,114,0.2);
+            box-shadow: 0 12px 32px rgba(255,54,33,0.3), 0 0 0 1px rgba(255,54,33,0.2);
         }
         table { width: 100%; border-collapse: collapse; margin: 20px 0; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
@@ -148,7 +148,7 @@
         }
         .badge {
             display: inline-block;
-            background: #FF6B5A;
+            background: #FF3621;
             color: white;
             padding: 5px 15px;
             border-radius: 20px;
@@ -171,7 +171,71 @@
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             text-align: center;
-            border: 2px solid #00A972;
+            border: 2px solid #FF3621;
+        }
+        
+        /* Flow Diagram Styles */
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin: 30px auto;
+            max-width: 600px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+        .flow-step {
+            text-align: center;
+            width: 100%;
+        }
+        .flow-box {
+            padding: 20px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            margin: 0 auto;
+            max-width: 400px;
+        }
+        .flow-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        .flow-box.source {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .flow-box.landing {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .flow-box.bronze {
+            background: linear-gradient(135deg, #cd7f32 0%, #b8860b 100%);
+            color: white;
+        }
+        .flow-box.silver {
+            background: linear-gradient(135deg, #c0c0c0 0%, #a8a8a8 100%);
+            color: #1a1a1a;
+        }
+        .flow-box.gold {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #1a1a1a;
+        }
+        .flow-arrow {
+            font-size: 2em;
+            color: #FF3621;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .flow-label {
+            margin-top: 8px;
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
         }
     </style>
 </head>
@@ -208,7 +272,32 @@
             </p>
 
             <h3>🔄 Fluxo Completo do Processo</h3>
-            <img src="ChatGPT Image Nov 29, 2025, 11_30_22 AM.png" alt="Fluxo do Processo" class="flow-image">
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="flow-box source">📁 Fonte de Dados</div>
+                    <div class="flow-label">SQL Server / CSV Files</div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">
+                    <div class="flow-box landing">📥 00_LANDING</div>
+                    <div class="flow-label">Volume: sql_server/</div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">
+                    <div class="flow-box bronze">🥉 01_BRONZE</div>
+                    <div class="flow-label">Dados brutos (CTAS / Python / COPY INTO / Auto Loader)</div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">
+                    <div class="flow-box silver">🥈 02_SILVER</div>
+                    <div class="flow-label">Dados limpos e validados</div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">
+                    <div class="flow-box gold">🥇 03_GOLD</div>
+                    <div class="flow-label">Dados agregados para consumo</div>
+                </div>
+            </div>
 
             <h3>🏗️ Arquitetura Medallion</h3>
             <table>
@@ -839,7 +928,7 @@ VACUUM smart_claims_dev.01_bronze.claims RETAIN 168 HOURS;</code>
         </div>
 
         <footer>
-            <h2 style="color: #FF6B5A; margin-bottom: 15px;">👩🏽‍💻 Vanessa Prado</h2>
+            <h2 style="color: #FF3621; margin-bottom: 15px;">👩🏽‍💻 Vanessa Prado</h2>
             <p style="font-size: 1.1em; margin-bottom: 10px;">
                 <a href="https://github.com/euvanessa-prado" target="_blank" style="color: #1a1a1a; text-decoration: none; font-weight: bold;">
                     GitHub: @euvanessa-prado

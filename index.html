@@ -8,56 +8,83 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            background: linear-gradient(135deg, #000000 0%, #1a0000 25%, #330000 50%, #4d0000 75%, #FF3621 100%);
             color: #333;
             line-height: 1.6;
         }
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
         header {
-            background: white;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             padding: 40px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(255,54,33,0.5);
+            border: 2px solid #FF3621;
             margin-bottom: 30px;
             text-align: center;
         }
-        h1 { color: #FF3621; font-size: 2.5em; margin-bottom: 10px; }
+        h1 { 
+            color: #FF3621; 
+            font-size: 2.5em; 
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255,54,33,0.5);
+        }
         .tabs {
             display: flex;
             gap: 10px;
-            background: white;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             padding: 20px 20px 0;
             border-radius: 15px 15px 0 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(255,54,33,0.3);
             overflow-x: auto;
+            border: 2px solid #FF3621;
+            border-bottom: none;
         }
         .tab {
             padding: 15px 30px;
-            background: #e5e7eb;
-            border: none;
+            background: #2d2d2d;
+            border: 1px solid #444;
             border-radius: 10px 10px 0 0;
             cursor: pointer;
             font-size: 1em;
             font-weight: 600;
             transition: all 0.3s;
             white-space: nowrap;
+            color: #ccc;
         }
-        .tab:hover { background: #d1d5db; }
+        .tab:hover { 
+            background: #3d3d3d;
+            color: #FF3621;
+            border-color: #FF3621;
+        }
         .tab.active {
-            background: linear-gradient(135deg, #FF3621 0%, #ff6b5a 100%);
+            background: linear-gradient(135deg, #FF3621 0%, #cc2b1a 100%);
             color: white;
+            border-color: #FF3621;
+            box-shadow: 0 0 20px rgba(255,54,33,0.5);
         }
         .tab-content {
             display: none;
             background: white;
             padding: 40px;
             border-radius: 0 0 15px 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(255,54,33,0.3);
             margin-bottom: 30px;
+            border: 2px solid #FF3621;
+            border-top: none;
         }
         .tab-content.active { display: block; }
-        h2 { color: #1e3a8a; margin-bottom: 20px; font-size: 2em; }
-        h3 { color: #FF3621; margin: 25px 0 15px; font-size: 1.5em; }
+        h2 { 
+            color: #FF3621; 
+            margin-bottom: 20px; 
+            font-size: 2em;
+            text-shadow: 0 2px 4px rgba(255,54,33,0.2);
+        }
+        h3 { 
+            color: #FF3621; 
+            margin: 25px 0 15px; 
+            font-size: 1.5em;
+            text-shadow: 0 1px 2px rgba(255,54,33,0.2);
+        }
         .code-block {
             background: #1e293b;
             color: #e2e8f0;
@@ -79,7 +106,7 @@
         }
         table { width: 100%; border-collapse: collapse; margin: 20px 0; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background: #1e3a8a; color: white; }
+        th { background: #1a1a1a; color: white; }
         .tip-box {
             background: #fef3c7;
             border-left: 4px solid #f59e0b;
@@ -106,11 +133,12 @@
         ul { margin-left: 30px; margin-top: 10px; }
         li { margin: 8px 0; }
         footer {
-            background: white;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(255,54,33,0.5);
             text-align: center;
+            border: 2px solid #FF3621;
         }
     </style>
 </head>
@@ -118,7 +146,7 @@
     <div class="container">
         <header>
             <h1>📚 Data Ingestion com Lakeflow Connect</h1>
-            <p style="font-size: 1.2em; color: #666; margin-top: 10px;">Guia Completo e Detalhado</p>
+            <p style="font-size: 1.2em; color: #ccc; margin-top: 10px;">Guia Completo e Detalhado</p>
             <div style="margin-top: 20px;">
                 <span class="badge">Databricks</span>
                 <span class="badge">Unity Catalog</span>
@@ -147,8 +175,7 @@
             </p>
 
             <h3>🔄 Fluxo Completo do Processo</h3>
-            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 1000'%3E%3Crect x='100' y='50' width='600' height='180' fill='%23f0f9ff' stroke='%23000' stroke-width='3' rx='10'/%3E%3Ctext x='400' y='100' text-anchor='middle' font-size='32' font-weight='bold'%3E1. PREPARAÇÃO%3C/text%3E%3Ctext x='150' y='140' font-size='18'%3E• Criar Catálogo (smart_claims_dev)%3C/text%3E%3Ctext x='150' y='170' font-size='18'%3E• Criar Schemas (00_landing, 01_bronze,%3C/text%3E%3Ctext x='170' y='195' font-size='18'%3E02_silver, 03_gold)%3C/text%3E%3Ctext x='150' y='220' font-size='18'%3E• Criar Volume (sql_server)%3C/text%3E%3Cpath d='M 400 230 L 400 280' stroke='%23000' stroke-width='3' marker-end='url(%23arrowhead)'/%3E%3Crect x='100' y='280' width='600' height='100' fill='%23e0f2fe' stroke='%23000' stroke-width='3' rx='10'/%3E%3Ctext x='400' y='320' text-anchor='middle' font-size='32' font-weight='bold'%3E2. UPLOAD DE DADOS%3C/text%3E%3Ctext x='150' y='360' font-size='18'%3E• Colocar claims.csv no volume%3C/text%3E%3Cpath d='M 400 380 L 400 430' stroke='%23000' stroke-width='3' marker-end='url(%23arrowhead)'/%3E%3Crect x='100' y='430' width='600' height='220' fill='%23dbeafe' stroke='%23000' stroke-width='3' rx='10'/%3E%3Ctext x='400' y='470' text-anchor='middle' font-size='32' font-weight='bold'%3E3. INGESTÃO (Escolha uma opção)%3C/text%3E%3Ctext x='150' y='510' font-size='18'%3E• Opção A: CTAS (carga única)%3C/text%3E%3Ctext x='150' y='540' font-size='18'%3E• Opção B: Python (mais controle)%3C/text%3E%3Ctext x='150' y='570' font-size='18'%3E• Opção C: COPY INTO (incremental manual)%3C/text%3E%3Ctext x='150' y='600' font-size='18'%3E• Opção D: Auto Loader (streaming automático)%3C/text%3E%3Ctext x='150' y='630' font-size='18' fill='%23FF3621' font-weight='bold'%3E⭐ Recomendado para produção%3C/text%3E%3Cpath d='M 400 650 L 400 700' stroke='%23000' stroke-width='3' marker-end='url(%23arrowhead)'/%3E%3Crect x='100' y='700' width='600' height='120' fill='%23bfdbfe' stroke='%23000' stroke-width='3' rx='10'/%3E%3Ctext x='400' y='740' text-anchor='middle' font-size='32' font-weight='bold'%3E4. RESULTADO%3C/text%3E%3Ctext x='150' y='780' font-size='18'%3E• Tabela smart_claims_dev.01_bronze.claims%3C/text%3E%3Ctext x='170' y='805' font-size='18'%3Epronta para uso%3C/text%3E%3Cdefs%3E%3Cmarker id='arrowhead' markerWidth='10' markerHeight='10' refX='5' refY='5' orient='auto'%3E%3Cpolygon points='0 0, 10 5, 0 10' fill='%23000'/%3E%3C/marker%3E%3C/defs%3E%3C/svg%3E" 
-                 alt="Fluxo do Processo" class="flow-image">
+            <img src="fluxo.png" alt="Fluxo do Processo" class="flow-image">
 
             <h3>🏗️ Arquitetura Medallion</h3>
             <table>
@@ -779,13 +806,13 @@ VACUUM smart_claims_dev.01_bronze.claims RETAIN 168 HOURS;</code>
         </div>
 
         <footer>
-            <h2 style="color: #1e3a8a; margin-bottom: 15px;">👩‍💻 Vanessa Prado</h2>
+            <h2 style="color: #FF3621; margin-bottom: 15px;">👩🏽‍💻 Vanessa Prado</h2>
             <p style="font-size: 1.1em; margin-bottom: 10px;">
-                <a href="https://github.com/euvanessa-prado" target="_blank" style="color: #FF3621;">
+                <a href="https://github.com/euvanessa-prado" target="_blank" style="color: #FF3621; text-decoration: none; font-weight: bold;">
                     GitHub: @euvanessa-prado
                 </a>
             </p>
-            <p style="color: #666; margin-top: 20px;">
+            <p style="color: #ccc; margin-top: 20px;">
                 ⭐ Projeto educacional - livre para uso e aprendizado!
             </p>
         </footer>

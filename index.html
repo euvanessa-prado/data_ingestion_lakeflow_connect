@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Ingestion com Lakeflow Connect - Guia Completo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        header {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        h1 { color: #FF3621; font-size: 2.5em; margin-bottom: 10px; }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            background: white;
+            padding: 20px 20px 0;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 15px 30px;
+            background: #e5e7eb;
+            border: none;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .tab:hover { background: #d1d5db; }
+        .tab.active {
+            background: linear-gradient(135deg, #FF3621 0%, #ff6b5a 100%);
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        .tab-content.active { display: block; }
+        h2 { color: #1e3a8a; margin-bottom: 20px; font-size: 2em; }
+        h3 { color: #FF3621; margin: 25px 0 15px; font-size: 1.5em; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            position: relative;
+        }
+        .code-block code { color: #38bdf8; }
+        .flow-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin: 30px 0;
+        }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #1e3a8a; color: white; }
+        .tip-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .badge {
+            display: inline-block;
+            background: #FF3621;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 5px;
+        }
+        .explanation {
+            background: #f0f9ff;
+            padding: 15px;
+            border-left: 4px solid #3b82f6;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        ul { margin-left: 30px; margin-top: 10px; }
+        li { margin: 8px 0; }
+        footer {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Data Ingestion com Lakeflow Connect</h1>
+            <p style="font-size: 1.2em; color: #666; margin-top: 10px;">Guia Completo e Detalhado</p>
+            <div style="margin-top: 20px;">
+                <span class="badge">Databricks</span>
+                <span class="badge">Unity Catalog</span>
+                <span class="badge">Auto Loader</span>
+                <span class="badge">Delta Lake</span>
+                <span class="badge">Lakeflow</span>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="openTab(event, 'visao-geral')">📊 Visão Geral</button>
+            <button class="tab" onclick="openTab(event, 'notebook1')">1️⃣ Catálogos e Schemas</button>
+            <button class="tab" onclick="openTab(event, 'notebook2')">2️⃣ Volumes</button>
+            <button class="tab" onclick="openTab(event, 'notebook3')">3️⃣ Data Ingestion</button>
+            <button class="tab" onclick="openTab(event, 'notebook4')">4️⃣ Auto Loader</button>
+            <button class="tab" onclick="openTab(event, 'comparacao')">⚖️ Comparação</button>
+            <button class="tab" onclick="openTab(event, 'comandos')">🔍 Comandos Úteis</button>
+        </div>
+
+        <!-- TAB: Visão Geral -->
+        <div id="visao-geral" class="tab-content active">
+            <h2>🎯 Visão Geral do Projeto</h2>
+            <p style="font-size: 1.1em; margin-bottom: 20px;">
+                Este projeto demonstra <strong>4 técnicas diferentes</strong> de ingestão de dados no Databricks,
+                desde batch simples até streaming automático com Auto Loader.
+            </p>
+
+            <h3>🔄 Fluxo Completo do Processo</h3>
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 1000'%3E%3Crect x='100' y='50' width='600' height='180' fill='%23f0f9ff' stroke='%23000' stroke-width='3' rx='10'/%3E%3Ctext x='400' y='100' text-anchor='middle' font-size='32' font-weight='bold'%3E1. PREPARAÇÃO%3C/text%3E%3Ctext x='150' y='140' font-size='18'%3E• Criar Catálogo (smart_claims_dev)%3C/text%3E%3Ctext x='150' y='170' font-size='18'%3E• Criar Schemas (00_landing, 01_bronze,%3C/text%3E%3Ctext x='170' y='195' font-size='18'%3E02_silver, 03_gold)%3C/text%3E%3Ctext x='150' y='220' font-size='18'%3E• Criar Volume (sql_server)%3C/text%3E%3Cpath d='M 400 230 L 400 280' stroke='%23000' stroke-width='3' marker-end='url(%23arrowhead)'/%3E%3Crect x='100' y='280' width='600' height='100' fill='%23e0f2fe' stroke='%23000' stroke-width='3' rx='10'/%3E%3Ctext x='400' y='320' text-anchor='middle' font-size='32' font-weight='bold'%3E2. UPLOAD DE DADOS%3C/text%3E%3Ctext x='150' y='360' font-size='18'%3E• Colocar claims.csv no volume%3C/text%3E%3Cpath d='M 400 380 L 400 430' stroke='%23000' stroke-width='3' marker-end='url(%23arrowhead)'/%3E%3Crect x='100' y='430' width='600' height='220' fill='%23dbeafe' stroke='%23000' stroke-width='3' rx='10'/%3E%3Ctext x='400' y='470' text-anchor='middle' font-size='32' font-weight='bold'%3E3. INGESTÃO (Escolha uma opção)%3C/text%3E%3Ctext x='150' y='510' font-size='18'%3E• Opção A: CTAS (carga única)%3C/text%3E%3Ctext x='150' y='540' font-size='18'%3E• Opção B: Python (mais controle)%3C/text%3E%3Ctext x='150' y='570' font-size='18'%3E• Opção C: COPY INTO (incremental manual)%3C/text%3E%3Ctext x='150' y='600' font-size='18'%3E• Opção D: Auto Loader (streaming automático)%3C/text%3E%3Ctext x='150' y='630' font-size='18' fill='%23FF3621' font-weight='bold'%3E⭐ Recomendado para produção%3C/text%3E%3Cpath d='M 400 650 L 400 700' stroke='%23000' stroke-width='3' marker-end='url(%23arrowhead)'/%3E%3Crect x='100' y='700' width='600' height='120' fill='%23bfdbfe' stroke='%23000' stroke-width='3' rx='10'/%3E%3Ctext x='400' y='740' text-anchor='middle' font-size='32' font-weight='bold'%3E4. RESULTADO%3C/text%3E%3Ctext x='150' y='780' font-size='18'%3E• Tabela smart_claims_dev.01_bronze.claims%3C/text%3E%3Ctext x='170' y='805' font-size='18'%3Epronta para uso%3C/text%3E%3Cdefs%3E%3Cmarker id='arrowhead' markerWidth='10' markerHeight='10' refX='5' refY='5' orient='auto'%3E%3Cpolygon points='0 0, 10 5, 0 10' fill='%23000'/%3E%3C/marker%3E%3C/defs%3E%3C/svg%3E" 
+                 alt="Fluxo do Processo" class="flow-image">
+
+            <h3>🏗️ Arquitetura Medallion</h3>
+            <table>
+                <tr>
+                    <th>Camada</th>
+                    <th>Descrição</th>
+                    <th>Qualidade dos Dados</th>
+                </tr>
+                <tr>
+                    <td>🥉 <strong>Bronze (Landing)</strong></td>
+                    <td>Dados brutos como chegaram</td>
+                    <td>Sem transformação</td>
+                </tr>
+                <tr>
+                    <td>🥈 <strong>Silver</strong></td>
+                    <td>Dados limpos e validados</td>
+                    <td>Qualidade intermediária</td>
+                </tr>
+                <tr>
+                    <td>🥇 <strong>Gold</strong></td>
+                    <td>Dados agregados para consumo</td>
+                    <td>Pronto para análise</td>
+                </tr>
+            </table>
+
+            <div class="tip-box">
+                <h3>💡 Por que usar esta arquitetura?</h3>
+                <ul>
+                    <li>✅ <strong>Rastreabilidade:</strong> Sempre tem os dados originais</li>
+                    <li>✅ <strong>Reprocessamento:</strong> Pode refazer transformações</li>
+                    <li>✅ <strong>Qualidade:</strong> Dados ficam progressivamente melhores</li>
+                    <li>✅ <strong>Governança:</strong> Controle de acesso por camada</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- TAB: Notebook 1 -->
+        <div id="notebook1" class="tab-content">
+            <h2>1️⃣ Notebook 1: Criação de Catálogos e Schemas</h2>
+            <p><strong>Objetivo:</strong> Criar a estrutura organizacional básica no Unity Catalog</p>
+
+            <h3>📝 Comando 1: Criar o Catálogo</h3>
+            <div class="code-block">
+<code>CREATE CATALOG IF NOT EXISTS smart_claims_dev
+COMMENT 'Catálogo principal para o projeto Smart Claims - Ambiente de Desenvolvimento'</code>
+            </div>
+            <div class="explanation">
+                <strong>Explicação linha por linha:</strong>
+                <ul>
+                    <li><code>CREATE CATALOG</code> → Cria um novo catálogo (nível mais alto de organização)</li>
+                    <li><code>IF NOT EXISTS</code> → Só cria se não existir (evita erro)</li>
+                    <li><code>smart_claims_dev</code> → Nome do catálogo</li>
+                    <li><code>COMMENT</code> → Documentação do propósito</li>
+                </ul>
+            </div>
+
+            <h3>📝 Comando 2: Verificar Catálogo Criado</h3>
+            <div class="code-block">
+<code>SHOW CATALOGS LIKE 'smart_claims_dev*'</code>
+            </div>
+            <div class="explanation">
+                <strong>O que faz:</strong> Lista todos os catálogos que começam com "smart_claims_dev"
+            </div>
+
+            <h3>📝 Comando 3: Criar Schema Landing (00_landing)</h3>
+            <div class="code-block">
+<code>CREATE SCHEMA IF NOT EXISTS smart_claims_dev.00_landing
+COMMENT 'Zona de landing - recepção de dados brutos de sistemas externos'</code>
+            </div>
+            <div class="explanation">
+                <strong>Propósito:</strong> Área para receber dados brutos antes de qualquer processamento
+            </div>
+
+            <h3>📝 Comando 4: Criar Schema Bronze (01_bronze)</h3>
+            <div class="code-block">
+<code>CREATE SCHEMA IF NOT EXISTS smart_claims_dev.01_bronze
+COMMENT 'Camada Bronze - dados brutos preservados de forma imutável'</code>
+            </div>
+            <div class="explanation">
+                <strong>Propósito:</strong> Armazena dados originais sem transformação (histórico completo)
+            </div>
+
+            <h3>📝 Comando 5: Criar Schema Silver (02_silver)</h3>
+            <div class="code-block">
+<code>CREATE SCHEMA IF NOT EXISTS smart_claims_dev.02_silver
+COMMENT 'Camada Silver - dados limpos, validados e enriquecidos'</code>
+            </div>
+            <div class="explanation">
+                <strong>Propósito:</strong> Dados limpos, com tipos corretos e validações aplicadas
+            </div>
+
+            <h3>📝 Comando 6: Criar Schema Gold (03_gold)</h3>
+            <div class="code-block">
+<code>CREATE SCHEMA IF NOT EXISTS smart_claims_dev.03_gold
+COMMENT 'Camada Gold - dados agregados e modelados para consumo final'</code>
+            </div>
+            <div class="explanation">
+                <strong>Propósito:</strong> Dados prontos para dashboards, relatórios e análises
+            </div>
+
+            <h3>📝 Comando 7: Listar Todos os Schemas</h3>
+            <div class="code-block">
+<code>SHOW SCHEMAS IN smart_claims_dev</code>
+            </div>
+            <div class="explanation">
+                <strong>Resultado esperado:</strong>
+                <ul>
+                    <li>00_landing</li>
+                    <li>01_bronze</li>
+                    <li>02_silver</li>
+                    <li>03_gold</li>
+                </ul>
+            </div>
+
+            <h3>📝 Comando 8: Descrever o Catálogo</h3>
+            <div class="code-block">
+<code>DESCRIBE CATALOG smart_claims_dev</code>
+            </div>
+            <div class="explanation">
+                <strong>O que mostra:</strong> Informações detalhadas do catálogo (owner, localização, comentários)
+            </div>
+
+            <h3>📝 Comando 9: Descrever um Schema</h3>
+            <div class="code-block">
+<code>DESCRIBE SCHEMA smart_claims_dev.00_landing</code>
+            </div>
+            <div class="explanation">
+                <strong>O que mostra:</strong> Detalhes do schema (localização, owner, propriedades)
+            </div>
+        </div>
+
+        <!-- TAB: Notebook 2 -->
+        <div id="notebook2" class="tab-content">
+            <h2>2️⃣ Notebook 2: Criação de Volumes</h2>
+            <p><strong>Objetivo:</strong> Criar volumes para armazenar arquivos CSV</p>
+
+            <h3>📝 Comando 1: Usar o Catálogo</h3>
+            <div class="code-block">
+<code>USE CATALOG smart_claims_dev</code>
+            </div>
+            <div class="explanation">
+                <strong>O que faz:</strong> Define o catálogo padrão para os próximos comandos
+            </div>
+
+            <h3>📝 Comando 2: Verificar Schemas</h3>
+            <div class="code-block">
+<code>SHOW SCHEMAS IN smart_claims_dev LIKE '00_landing'</code>
+            </div>
+            <div class="explanation">
+                <strong>O que faz:</strong> Confirma que o schema 00_landing existe
+            </div>
+
+            <h3>📝 Comando 3: Criar Volume para SQL Server</h3>
+            <div class="code-block">
+<code>CREATE VOLUME IF NOT EXISTS smart_claims_dev.00_landing.sql_server
+COMMENT 'Volume para armazenar dados extraídos do SQL Server (CSV: claims, customers, policies)'</code>
+            </div>
+            <div class="explanation">
+                <strong>O que é um Volume?</strong>
+                <ul>
+                    <li>📁 Espaço para armazenar <strong>arquivos</strong> (não tabelas)</li>
+                    <li>📁 Suporta CSV, JSON, Parquet, imagens, etc</li>
+                    <li>📁 Gerenciado pelo Unity Catalog</li>
+                    <li>📁 Caminho: <code>/Volumes/smart_claims_dev/00_landing/sql_server/</code></li>
+                </ul>
+            </div>
+
+            <h3>📝 Comando 4: Listar Arquivos no Volume</h3>
+            <div class="code-block">
+<code>LIST '/Volumes/smart_claims_dev/00_landing/sql_server'</code>
+            </div>
+            <div class="explanation">
+                <strong>O que faz:</strong> Mostra todos os arquivos dentro do volume
+            </div>
+        </div>
+
+        <!-- TAB: Notebook 3 -->
+        <div id="notebook3" class="tab-content">
+            <h2>3️⃣ Notebook 3: Data Ingestion (Batch)</h2>
+            <p><strong>Objetivo:</strong> Demonstrar 3 técnicas diferentes de ingestão batch</p>
+
+            <h3>🔧 Setup Inicial</h3>
+            <div class="code-block">
+<code>-- Verificar contexto atual
+SELECT current_catalog(), current_schema();
+
+-- Definir catálogo e schema
+USE CATALOG smart_claims_dev;
+USE SCHEMA `00_landing`;</code>
+            </div>
+
+            <h3>📝 Explorar os Dados (Antes de Criar Tabela)</h3>
+            <div class="code-block">
+<code>-- Método 1: Ler diretamente do CSV
+SELECT *
+FROM csv.`/Volumes/smart_claims_dev/00_landing/sql_server/claims.csv`;
+
+-- Método 2: Usar read_files
+SELECT *
+FROM read_files(
+  '/Volumes/smart_claims_dev/00_landing/sql_server/claims.csv',
+  format => 'csv'
+)
+LIMIT 10;</code>
+            </div>
+            <div class="explanation">
+                <strong>Por que explorar primeiro?</strong>
+                <ul>
+                    <li>✅ Ver a estrutura dos dados</li>
+                    <li>✅ Identificar colunas</li>
+                    <li>✅ Detectar problemas antes de criar tabela</li>
+                </ul>
+            </div>
+
+            <h3>🔹 Técnica 1: CREATE TABLE AS SELECT (CTAS)</h3>
+            <div class="code-block">
+<code>-- Dropar tabela se existir (para demonstração)
+DROP TABLE IF EXISTS smart_claims_dev.01_bronze.claims;
+
+-- Criar tabela a partir do CSV
+CREATE TABLE IF NOT EXISTS smart_claims_dev.01_bronze.claims
+AS SELECT *
+FROM read_files(
+  '/Volumes/smart_claims_dev/00_landing/sql_server/claims.csv',
+  format => 'csv'
+);
+
+-- Verificar dados
+SELECT * FROM smart_claims_dev.01_bronze.claims;</code>
+            </div>
+            <div class="explanation">
+                <strong>Quando usar CTAS:</strong>
+                <ul>
+                    <li>✅ Carga inicial (primeira vez)</li>
+                    <li>✅ Dados pequenos/médios</li>
+                    <li>✅ Não precisa de schema específico</li>
+                    <li>❌ Não detecta novos arquivos</li>
+                    <li>❌ Sempre reescreve tudo</li>
+                </ul>
+            </div>
+
+            <h3>🔹 Técnica 2: Python com PySpark</h3>
+            <div class="code-block">
+<code># Dropar tabela
+%sql
+DROP TABLE IF EXISTS smart_claims_dev.01_bronze.claims;
+
+# Ler CSV com PySpark
+df = (
+    spark.read
+    .format("csv")
+    .option("header", True)  # Primeira linha é cabeçalho
+    .load("/Volumes/smart_claims_dev/00_landing/sql_server/claims.csv")
+)
+
+# Salvar como tabela Delta
+df.write.mode("overwrite").saveAsTable("smart_claims_dev.01_bronze.claims")
+
+# Ler e exibir
+claims_table = spark.table("smart_claims_dev.01_bronze.claims")
+display(claims_table)</code>
+            </div>
+            <div class="explanation">
+                <strong>Quando usar Python:</strong>
+                <ul>
+                    <li>✅ Precisa de transformações complexas</li>
+                    <li>✅ Quer mais controle sobre o processo</li>
+                    <li>✅ Integração com outras bibliotecas Python</li>
+                    <li>✅ Lógica condicional complexa</li>
+                </ul>
+            </div>
+
+            <h3>🔹 Técnica 3: COPY INTO (Incremental)</h3>
+            <div class="code-block">
+<code>-- Passo 1: Criar tabela com schema definido
+DROP TABLE IF EXISTS smart_claims_dev.01_bronze.claims;
+
+CREATE OR REPLACE TABLE smart_claims_dev.01_bronze.claims (
+    claim_no STRING,
+    policy_no STRING,
+    claim_date STRING,
+    months_as_customer STRING,
+    injury STRING,
+    property STRING,
+    vehicle STRING,
+    total STRING,
+    collision_type STRING,
+    number_of_vehicles_involved STRING,
+    age STRING,
+    insured_relationship STRING,
+    license_issue_date STRING,
+    date STRING,
+    hour STRING,
+    type STRING,
+    severity STRING,
+    number_of_witnesses STRING,
+    suspicious_activity STRING
+)
+COMMENT 'Landing raw claims data (CSV → Bronze, raw strings)';
+
+-- Passo 2: Copiar dados do CSV
+COPY INTO smart_claims_dev.01_bronze.claims
+FROM '/Volumes/smart_claims_dev/00_landing/sql_server/claims.csv'
+FILEFORMAT = CSV
+FORMAT_OPTIONS ('header'='true')
+COPY_OPTIONS ('mergeSchema'='false');
+
+-- Verificar
+SELECT * FROM smart_claims_dev.01_bronze.claims;</code>
+            </div>
+            <div class="explanation">
+                <strong>Quando usar COPY INTO:</strong>
+                <ul>
+                    <li>✅ Cargas incrementais (diárias/semanais)</li>
+                    <li>✅ Não duplica dados já processados</li>
+                    <li>✅ Controle de schema</li>
+                    <li>✅ Rastreamento de arquivos processados</li>
+                    <li>❌ Precisa executar manualmente</li>
+                </ul>
+            </div>
+
+            <h3>📝 Verificar Detalhes da Tabela</h3>
+            <div class="code-block">
+<code>-- Ver estrutura
+DESCRIBE TABLE EXTENDED smart_claims_dev.01_bronze.claims;
+
+-- Ver localização física
+SHOW CREATE TABLE smart_claims_dev.01_bronze.claims;</code>
+            </div>
+        </div>
+
+        <!-- TAB: Notebook 4 -->
+        <div id="notebook4" class="tab-content">
+            <h2>4️⃣ Notebook 4: Auto Loader + Lakeflow (Streaming)</h2>
+            <p><strong>Objetivo:</strong> Implementar ingestão automática e contínua</p>
+
+            <h3>🔧 Setup</h3>
+            <div class="code-block">
+<code>-- Verificar contexto
+SELECT current_catalog(), current_schema();
+
+-- Definir contexto
+USE CATALOG smart_claims_dev;
+USE SCHEMA 01_bronze;
+
+-- Verificar novamente
+SELECT current_catalog(), current_schema();</code>
+            </div>
+
+            <h3>📊 Conceito: Batch vs Streaming</h3>
+            <table>
+                <tr>
+                    <th>Aspecto</th>
+                    <th>Batch (Notebooks 1-3)</th>
+                    <th>Streaming (Auto Loader)</th>
+                </tr>
+                <tr>
+                    <td><strong>Execução</strong></td>
+                    <td>Manual (você executa)</td>
+                    <td>Automática (sempre rodando)</td>
+                </tr>
+                <tr>
+                    <td><strong>Processamento</strong></td>
+                    <td>Tudo de uma vez</td>
+                    <td>Incremental (só novos arquivos)</td>
+                </tr>
+                <tr>
+                    <td><strong>Latência</strong></td>
+                    <td>Alta (espera próxima execução)</td>
+                    <td>Baixa (quase tempo real)</td>
+                </tr>
+                <tr>
+                    <td><strong>Analogia</strong></td>
+                    <td>Baixar filme completo</td>
+                    <td>Assistir Netflix (streaming)</td>
+                </tr>
+            </table>
+
+            <h3>📝 Explorar Dados</h3>
+            <div class="code-block">
+<code>-- Ver arquivo CSV
+SELECT *
+FROM csv.`/Volumes/smart_claims_dev/00_landing/sql_server/claims.csv`;
+
+-- Dropar tabela para recriar
+DROP TABLE IF EXISTS smart_claims_dev.01_bronze.claims;</code>
+            </div>
+
+            <h3>🔹 Método 1: Streaming Table Simples</h3>
+            <div class="code-block">
+<code>CREATE OR REFRESH STREAMING TABLE smart_claims_dev.01_bronze.claims
+AS
+SELECT *
+FROM read_files(
+  '/Volumes/smart_claims_dev/00_landing/sql_server/claims.csv',
+  format => 'csv',
+  header => true
+);</code>
+            </div>
+            <div class="explanation">
+                <strong>O que acontece:</strong>
+                <ul>
+                    <li>🔄 Monitora a pasta continuamente</li>
+                    <li>🔄 Detecta novos arquivos automaticamente</li>
+                    <li>🔄 Processa apenas arquivos novos</li>
+                    <li>🔄 Mantém checkpoint (não reprocessa)</li>
+                </ul>
+            </div>
+
+            <h3>🔹 Método 2: Streaming com Agendamento</h3>
+            <div class="code-block">
+<code>CREATE OR REFRESH STREAMING TABLE smart_claims_dev.01_bronze.claims
+SCHEDULE EVERY 1 WEEK
+AS
+SELECT *
+FROM read_files(
+  '/Volumes/smart_claims_dev/00_landing/sql_server/claims.csv',
+  format => 'csv',
+  header => true
+);</code>
+            </div>
+            <div class="explanation">
+                <strong>SCHEDULE EVERY:</strong>
+                <ul>
+                    <li><code>1 HOUR</code> → Executa a cada hora</li>
+                    <li><code>1 DAY</code> → Executa diariamente</li>
+                    <li><code>1 WEEK</code> → Executa semanalmente</li>
+                </ul>
+            </div>
+
+            <h3>🔹 Método 3: Auto Loader com cloud_files()</h3>
+            <div class="code-block">
+<code>CREATE OR REFRESH STREAMING TABLE smart_claims_dev.01_bronze.claims
+AS
+SELECT *
+FROM STREAM cloud_files(
+  '/Volumes/smart_claims_dev/00_landing/sql_server/claims.csv',
+  format => 'csv',
+  header => true
+);</code>
+            </div>
+
+            <h3>🔹 Método 4: Lakeflow com Metadados (RECOMENDADO)</h3>
+            <div class="code-block">
+<code>CREATE OR REFRESH STREAMING LIVE TABLE smart_claims_dev.01_bronze.claims
+COMMENT "Bronze — sinistros (claims) a partir de 00_landing/sql_server/claims.csv"
+TBLPROPERTIES ("quality" = "bronze")
+AS
+SELECT
+  *,
+  _metadata.file_path               AS input_file,
+  _metadata.file_modification_time  AS input_file_mtime,
+  current_timestamp()               AS ingested_at
+FROM cloud_files(
+  "/Volumes/smart_claims_dev/00_landing/sql_server",
+  "csv",
+  map(
+    "header", "true",
+    "cloudFiles.inferColumnTypes", "true",
+    "cloudFiles.schemaEvolutionMode", "addNewColumns",
+    "pathGlobFilter", "claims.csv"
+  )
+);</code>
+            </div>
+            <div class="explanation">
+                <strong>Explicação detalhada:</strong>
+                <ul>
+                    <li><code>STREAMING LIVE TABLE</code> → Tabela sempre atualizada</li>
+                    <li><code>_metadata.file_path</code> → Rastreia origem do dado</li>
+                    <li><code>_metadata.file_modification_time</code> → Quando arquivo foi modificado</li>
+                    <li><code>current_timestamp()</code> → Quando foi ingerido</li>
+                    <li><code>inferColumnTypes</code> → Detecta tipos automaticamente</li>
+                    <li><code>schemaEvolutionMode</code> → Adiciona colunas novas automaticamente</li>
+                    <li><code>pathGlobFilter</code> → Filtra apenas arquivos específicos</li>
+                </ul>
+            </div>
+
+            <h3>📝 Verificar Dados</h3>
+            <div class="code-block">
+<code>SELECT * FROM smart_claims_dev.01_bronze.claims LIMIT 10;</code>
+            </div>
+        </div>
+
+        <!-- TAB: Comparação -->
+        <div id="comparacao" class="tab-content">
+            <h2>⚖️ Comparação dos Métodos</h2>
+            
+            <table>
+                <tr>
+                    <th>Método</th>
+                    <th>Complexidade</th>
+                    <th>Quando Usar</th>
+                    <th>Vantagens</th>
+                    <th>Desvantagens</th>
+                </tr>
+                <tr>
+                    <td><strong>CTAS</strong></td>
+                    <td>⭐ Fácil</td>
+                    <td>Carga inicial única</td>
+                    <td>• Simples<br>• Rápido<br>• Sem configuração</td>
+                    <td>• Não detecta novos arquivos<br>• Sempre reescreve tudo</td>
+                </tr>
+                <tr>
+                    <td><strong>Python</strong></td>
+                    <td>⭐⭐ Médio</td>
+                    <td>Transformações complexas</td>
+                    <td>• Muito flexível<br>• Controle total<br>• Integração Python</td>
+                    <td>• Mais código<br>• Requer conhecimento Python</td>
+                </tr>
+                <tr>
+                    <td><strong>COPY INTO</strong></td>
+                    <td>⭐⭐ Médio</td>
+                    <td>Cargas incrementais manuais</td>
+                    <td>• Evita duplicatas<br>• Controle de schema<br>• Rastreamento</td>
+                    <td>• Execução manual<br>• Precisa definir schema</td>
+                </tr>
+                <tr>
+                    <td><strong>Auto Loader</strong></td>
+                    <td>⭐⭐⭐ Avançado</td>
+                    <td>Produção (automático)</td>
+                    <td>• Totalmente automático<br>• Schema evolution<br>• Checkpoint<br>• Quase tempo real</td>
+                    <td>• Configuração mais complexa<br>• Requer pipeline</td>
+                </tr>
+            </table>
+
+            <h3>🎯 Recomendações por Cenário</h3>
+            <div class="tip-box">
+                <h4>📊 Desenvolvimento/Testes</h4>
+                <p>Use <strong>CTAS</strong> ou <strong>Python</strong> - mais simples e rápido para experimentar</p>
+            </div>
+
+            <div class="tip-box">
+                <h4>🏭 Produção com Cargas Agendadas</h4>
+                <p>Use <strong>COPY INTO</strong> - controle e rastreamento sem complexidade de streaming</p>
+            </div>
+
+            <div class="tip-box">
+                <h4>🚀 Produção com Dados Contínuos</h4>
+                <p>Use <strong>Auto Loader</strong> - automação completa e baixa latência</p>
+            </div>
+        </div>
+
+        <!-- TAB: Comandos Úteis -->
+        <div id="comandos" class="tab-content">
+            <h2>🔍 Comandos Úteis para Exploração</h2>
+
+            <h3>📊 Exploração de Catálogos e Schemas</h3>
+            <div class="code-block">
+<code>-- Ver todos os catálogos
+SHOW CATALOGS;
+
+-- Ver schemas de um catálogo
+SHOW SCHEMAS IN smart_claims_dev;
+
+-- Ver tabelas de um schema
+SHOW TABLES IN smart_claims_dev.01_bronze;
+
+-- Ver volumes
+SHOW VOLUMES IN smart_claims_dev.00_landing;</code>
+            </div>
+
+            <h3>📁 Exploração de Volumes e Arquivos</h3>
+            <div class="code-block">
+<code>-- Listar arquivos em um volume
+LIST '/Volumes/smart_claims_dev/00_landing/sql_server';
+
+-- Ler arquivo CSV diretamente
+SELECT * FROM csv.`/Volumes/smart_claims_dev/00_landing/sql_server/claims.csv`;
+
+-- Contar linhas do arquivo
+SELECT COUNT(*) FROM csv.`/Volumes/smart_claims_dev/00_landing/sql_server/claims.csv`;</code>
+            </div>
+
+            <h3>🔍 Exploração de Tabelas</h3>
+            <div class="code-block">
+<code>-- Ver estrutura da tabela
+DESCRIBE TABLE smart_claims_dev.01_bronze.claims;
+
+-- Ver detalhes completos
+DESCRIBE TABLE EXTENDED smart_claims_dev.01_bronze.claims;
+
+-- Ver DDL da tabela
+SHOW CREATE TABLE smart_claims_dev.01_bronze.claims;
+
+-- Ver primeiras linhas
+SELECT * FROM smart_claims_dev.01_bronze.claims LIMIT 10;
+
+-- Contar registros
+SELECT COUNT(*) FROM smart_claims_dev.01_bronze.claims;</code>
+            </div>
+
+            <h3>📈 Análise de Dados</h3>
+            <div class="code-block">
+<code>-- Ver colunas e tipos
+SELECT column_name, data_type 
+FROM information_schema.columns 
+WHERE table_name = 'claims';
+
+-- Estatísticas básicas
+SELECT 
+  COUNT(*) as total_records,
+  COUNT(DISTINCT claim_no) as unique_claims,
+  MIN(claim_date) as first_claim,
+  MAX(claim_date) as last_claim
+FROM smart_claims_dev.01_bronze.claims;
+
+-- Ver valores nulos
+SELECT 
+  COUNT(*) - COUNT(claim_no) as null_claim_no,
+  COUNT(*) - COUNT(policy_no) as null_policy_no
+FROM smart_claims_dev.01_bronze.claims;</code>
+            </div>
+
+            <h3>🗑️ Limpeza e Manutenção</h3>
+            <div class="code-block">
+<code>-- Dropar tabela
+DROP TABLE IF EXISTS smart_claims_dev.01_bronze.claims;
+
+-- Dropar schema (precisa estar vazio)
+DROP SCHEMA IF EXISTS smart_claims_dev.00_landing;
+
+-- Dropar catálogo (precisa estar vazio)
+DROP CATALOG IF EXISTS smart_claims_dev;
+
+-- Vacuum (limpar arquivos antigos)
+VACUUM smart_claims_dev.01_bronze.claims RETAIN 168 HOURS;</code>
+            </div>
+        </div>
+
+        <footer>
+            <h2 style="color: #1e3a8a; margin-bottom: 15px;">👩‍💻 Vanessa Prado</h2>
+            <p style="font-size: 1.1em; margin-bottom: 10px;">
+                <a href="https://github.com/euvanessa-prado" target="_blank" style="color: #FF3621;">
+                    GitHub: @euvanessa-prado
+                </a>
+            </p>
+            <p style="color: #666; margin-top: 20px;">
+                ⭐ Projeto educacional - livre para uso e aprendizado!
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
+</body>
+</html>
